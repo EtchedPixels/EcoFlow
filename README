@@ -1,0 +1,65 @@
+Simple tools for handling EcoFlow batteries
+
+These are very much a prototype. To make them more useful needs
+- integrating with a proper JSON parser that doesn't suck (I couldn't find
+  one on a quick search) 
+- using mosquitto as a library so it doesn't end up with credentials
+  in the command line
+- adding protobuf style parsing if you want to read from the PowerStream or
+  Plugs (the Plugs also support Matter)
+
+I'm mostly putting it up so that people trying to decipher how the hell you
+control these things have a starting point that's a bit better than
+"Install gigs of homeassistant, install special sideloading stuff into
+ that, install even more into that" and to be able to turn a battery on and
+off without using an entire virtual machine running its own custom Linux
+OS. 
+
+This is not an official tool or endorsed by or endorsing Ecoflow. In fact
+if there are other products that meet your needs I would recommend them
+instead as the Ecoflow API is poorly to undocumented and requires talking
+JSON to servers in China. Not exactly what you want for a device that
+you want to manage in a power-loss situation. 
+
+To set up the .ecoflow file see
+https://konkludenz.de/en/making-ecoflow-wave-2-smart-home-capable-with-node-red-and-mqtt/
+
+The script there will give you the
+
+user (omit the app)
+password
+ident
+id
+
+needed for the authentication side. These go into the .ecoflow file along
+with entries of the form
+
+0: SERIALOFDEV0
+1: SERIALOFDEV1 
+
+So something like
+
+id 1XXXXXXXX
+userid dXXXXXXXXXXXXXXXXXXX
+password 8XXXXXXXXXXXXXXXXXXXX
+ident ANDROID_XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+0: R1234...
+
+
+It should work with any batteries that use the EcoFlow cloud protocol and
+JSON. The devices that use protobufs won't work. It has had limited testing
+on the Delta 2 and the River 2.
+
+To add commands run the monitoring script from the URL above, set the
+options and paste the resulting data with a %d for the ident info into
+the tiny table in the ecoset app. It will also let you have a pair of %d
+values and put the second value off the command line into the app.
+
+Right now it only knows how to turn reserve on/off at 30% so I can power
+the batteries up off mains between 2 and 5am then switch back to running
+as a solar/battery UPS. This seems to work so far with the Delta2
+but the River2 randomly powers off the 12v and AC for reasons not yet clear
+even when told not to (irrespective of using these tools) and is going to
+get returned as unfit for purpose. Could be a faulty unit (I think there
+is a reason Ecoflow are forever having sales on refurbished units) but
+unclear.
